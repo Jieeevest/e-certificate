@@ -91,7 +91,7 @@ export default function DashboardPage() {
       <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
 
       <motion.div
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6"
         variants={container}
         initial="hidden"
         animate="show"
@@ -99,7 +99,7 @@ export default function DashboardPage() {
         <motion.div variants={item}>
           <Card>
             <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-              <CardTitle className="text-sm font-medium text-gray-500">
+              <CardTitle className="text-base font-medium text-gray-500">
                 Total Mahasiswa
               </CardTitle>
               <Users className="h-4 w-4 text-blue-600" />
@@ -108,9 +108,6 @@ export default function DashboardPage() {
               <div className="text-3xl font-bold text-blue-600">
                 {stats.totalStudents}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Jumlah mahasiswa terdaftar
-              </p>
             </CardContent>
           </Card>
         </motion.div>
@@ -118,7 +115,7 @@ export default function DashboardPage() {
         <motion.div variants={item}>
           <Card>
             <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-              <CardTitle className="text-sm font-medium text-gray-500">
+              <CardTitle className="text-base font-medium text-gray-500">
                 Total Sertifikat
               </CardTitle>
               <FileText className="h-4 w-4 text-blue-600" />
@@ -127,9 +124,6 @@ export default function DashboardPage() {
               <div className="text-3xl font-bold text-blue-600">
                 {stats.totalCertificates}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Total sertifikat dalam sistem
-              </p>
             </CardContent>
           </Card>
         </motion.div>
@@ -137,8 +131,8 @@ export default function DashboardPage() {
         <motion.div variants={item}>
           <Card>
             <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-              <CardTitle className="text-sm font-medium text-gray-500">
-                Sertifikat Pending
+              <CardTitle className="text-base font-medium text-gray-500">
+                Pending
               </CardTitle>
               <Clock className="h-4 w-4 text-yellow-600" />
             </CardHeader>
@@ -146,9 +140,6 @@ export default function DashboardPage() {
               <div className="text-3xl font-bold text-yellow-600">
                 {stats.pendingCertificates}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Menunggu persetujuan
-              </p>
             </CardContent>
           </Card>
         </motion.div>
@@ -156,8 +147,8 @@ export default function DashboardPage() {
         <motion.div variants={item}>
           <Card>
             <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-              <CardTitle className="text-sm font-medium text-gray-500">
-                Sertifikat Diterbitkan
+              <CardTitle className="text-base font-medium text-gray-500">
+                Diterbitkan
               </CardTitle>
               <CheckCircle className="h-4 w-4 text-green-600" />
             </CardHeader>
@@ -165,9 +156,6 @@ export default function DashboardPage() {
               <div className="text-3xl font-bold text-green-600">
                 {stats.issuedCertificates}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Sertifikat telah diterbitkan
-              </p>
             </CardContent>
           </Card>
         </motion.div>
@@ -175,8 +163,8 @@ export default function DashboardPage() {
         <motion.div variants={item}>
           <Card>
             <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-              <CardTitle className="text-sm font-medium text-gray-500">
-                Sertifikat Dicabut
+              <CardTitle className="text-base font-medium text-gray-500">
+                Dicabut
               </CardTitle>
               <XCircle className="h-4 w-4 text-red-600" />
             </CardHeader>
@@ -184,28 +172,6 @@ export default function DashboardPage() {
               <div className="text-3xl font-bold text-red-600">
                 {stats.revokedCertificates}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Sertifikat telah dicabut
-              </p>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div variants={item}>
-          <Card>
-            <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-              <CardTitle className="text-sm font-medium text-gray-500">
-                Sertifikat Kedaluwarsa
-              </CardTitle>
-              <AlertTriangle className="h-4 w-4 text-gray-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-600">
-                {stats.expiredCertificates}
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Sertifikat telah kedaluwarsa
-              </p>
             </CardContent>
           </Card>
         </motion.div>
@@ -259,7 +225,7 @@ export default function DashboardPage() {
           <div className="space-y-3">
             {stats.pendingCertificates > 0 ? (
               <div className="p-3 border-l-4 border-yellow-400 bg-yellow-50 rounded-md">
-                <p className="text-sm text-yellow-800">Perlu Perhatian</p>
+                <p className="text-base text-yellow-800">Perlu Perhatian</p>
                 <p className="font-medium text-yellow-900">
                   {stats.pendingCertificates} sertifikat menunggu untuk diproses
                 </p>
@@ -268,7 +234,7 @@ export default function DashboardPage() {
 
             {stats.issuedCertificates > 0 ? (
               <div className="p-3 border-l-4 border-green-400 bg-green-50 rounded-md">
-                <p className="text-sm text-green-800">Terbaru</p>
+                <p className="text-base text-green-800">Terbaru</p>
                 <p className="font-medium text-green-900">
                   {stats.issuedCertificates} sertifikat telah diterbitkan
                 </p>
@@ -277,7 +243,7 @@ export default function DashboardPage() {
 
             {stats.totalStudents > 0 ? (
               <div className="p-3 border-l-4 border-blue-400 bg-blue-50 rounded-md">
-                <p className="text-sm text-blue-800">Informasi</p>
+                <p className="text-base text-blue-800">Informasi</p>
                 <p className="font-medium text-blue-900">
                   Total {stats.totalStudents} mahasiswa terdaftar dalam sistem
                 </p>
@@ -286,7 +252,7 @@ export default function DashboardPage() {
 
             {stats.revokedCertificates > 0 ? (
               <div className="p-3 border-l-4 border-red-400 bg-red-50 rounded-md">
-                <p className="text-sm text-red-800">Perhatian</p>
+                <p className="text-base text-red-800">Perhatian</p>
                 <p className="font-medium text-red-900">
                   {stats.revokedCertificates} sertifikat telah dicabut
                 </p>

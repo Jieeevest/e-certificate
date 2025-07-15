@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { formatDate } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatDate } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface Student {
   id: string;
@@ -21,17 +21,21 @@ interface Certificate {
   id: string;
   title: string;
   description: string;
-  status: 'PENDING' | 'ISSUED' | 'REVOKED';
+  status: "PENDING" | "ISSUED" | "REVOKED";
   issueDate: string | null;
   createdAt: string;
 }
 
-export default function StudentDetailPage({ params }: { params: { id: string } }) {
+export default function StudentDetailPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const router = useRouter();
   const { id } = params;
   const [student, setStudent] = useState<Student | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchStudent = async () => {
@@ -47,25 +51,27 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
         // Mock data for now
         const mockStudent: Student = {
           id,
-          nim: 'S12345',
-          name: 'John Doe',
-          major: 'Computer Science',
+          nim: "S12345",
+          name: "John Doe",
+          major: "Computer Science",
           year: 2023,
           createdAt: new Date().toISOString(),
           certificates: [
             {
-              id: 'cert1',
-              title: 'Web Development Certificate',
-              description: 'Completed the web development course with excellence',
-              status: 'ISSUED',
+              id: "cert1",
+              title: "Web Development Certificate",
+              description:
+                "Completed the web development course with excellence",
+              status: "ISSUED",
               issueDate: new Date().toISOString(),
               createdAt: new Date().toISOString(),
             },
             {
-              id: 'cert2',
-              title: 'Database Management Certificate',
-              description: 'Successfully completed the database management course',
-              status: 'PENDING',
+              id: "cert2",
+              title: "Database Management Certificate",
+              description:
+                "Successfully completed the database management course",
+              status: "PENDING",
               issueDate: null,
               createdAt: new Date().toISOString(),
             },
@@ -75,8 +81,8 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
         setStudent(mockStudent);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching student:', error);
-        setError('Failed to load student data');
+        console.error("Error fetching student:", error);
+        setError("Failed to load student data");
         setLoading(false);
       }
     };
@@ -85,13 +91,13 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   }, [id]);
 
   const handleDeleteStudent = async () => {
-    if (confirm('Are you sure you want to delete this student?')) {
+    if (confirm("Are you sure you want to delete this student?")) {
       try {
         // In a real application, you would call an API to delete the student
         // const response = await fetch(`/api/students/${id}`, {
         //   method: 'DELETE',
         // });
-        // 
+        //
         // if (!response.ok) {
         //   throw new Error('Failed to delete student');
         // }
@@ -99,10 +105,10 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
         // For now, we'll just simulate a successful deletion
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        router.push('/dashboard/students');
+        router.push("/dashboard/students");
       } catch (error) {
-        console.error('Error deleting student:', error);
-        alert('Failed to delete student');
+        console.error("Error deleting student:", error);
+        alert("Failed to delete student");
       }
     }
   };
@@ -125,8 +131,12 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <p className="text-red-500 mb-4">{error || 'Student not found'}</p>
-              <Button onClick={() => router.push('/dashboard/students')}>Back to Students</Button>
+              <p className="text-red-500 mb-4">
+                {error || "Student not found"}
+              </p>
+              <Button onClick={() => router.push("/dashboard/students")}>
+                Back to Students
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -139,10 +149,16 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
         <h1 className="text-2xl font-bold mb-4 md:mb-0">Detail Mahasiswa</h1>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" onClick={() => router.push('/dashboard/students')}>
+          <Button
+            variant="outline"
+            onClick={() => router.push("/dashboard/students")}
+          >
             Kembali
           </Button>
-          <Button variant="primary" onClick={() => router.push(`/dashboard/students/edit/${id}`)}>
+          <Button
+            variant="primary"
+            onClick={() => router.push(`/dashboard/students/edit/${id}`)}
+          >
             Edit
           </Button>
           <Button variant="danger" onClick={handleDeleteStudent}>
@@ -152,7 +168,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="lg:col-span-1"
@@ -188,7 +204,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
           </Card>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
@@ -207,40 +223,55 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
               ) : (
                 <div className="space-y-4">
                   {student.certificates.map((certificate, index) => (
-                    <motion.div 
+                    <motion.div
                       key={certificate.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 + (index * 0.05) }}
+                      transition={{ delay: 0.1 + index * 0.05 }}
                     >
                       <Card className="bg-gray-50">
                         <CardContent className="p-4">
                           <div className="flex flex-col md:flex-row md:items-center justify-between">
                             <div className="space-y-1">
-                              <h3 className="font-medium">{certificate.title}</h3>
-                              <p className="text-sm text-gray-600">{certificate.description}</p>
+                              <h3 className="font-medium">
+                                {certificate.title}
+                              </h3>
+                              <p className="text-sm text-gray-600">
+                                {certificate.description}
+                              </p>
                               <div className="flex items-center space-x-2">
-                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                  certificate.status === 'ISSUED' ? 'bg-green-100 text-green-800' : 
-                                  certificate.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 
-                                  'bg-red-100 text-red-800'
-                                }`}>
-                                  {certificate.status === 'ISSUED' ? 'Diterbitkan' : 
-                                   certificate.status === 'PENDING' ? 'Menunggu' : 
-                                   'Dicabut'}
+                                <span
+                                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                    certificate.status === "ISSUED"
+                                      ? "bg-green-100 text-green-800"
+                                      : certificate.status === "PENDING"
+                                      ? "bg-yellow-100 text-yellow-800"
+                                      : "bg-red-100 text-red-800"
+                                  }`}
+                                >
+                                  {certificate.status === "ISSUED"
+                                    ? "Diterbitkan"
+                                    : certificate.status === "PENDING"
+                                    ? "Menunggu"
+                                    : "Dicabut"}
                                 </span>
                                 {certificate.issueDate && (
                                   <span className="text-xs text-gray-500">
-                                    Diterbitkan: {formatDate(certificate.issueDate)}
+                                    Diterbitkan:{" "}
+                                    {formatDate(certificate.issueDate)}
                                   </span>
                                 )}
                               </div>
                             </div>
                             <div className="mt-3 md:mt-0 flex space-x-2">
-                              <Button 
-                                variant="outline" 
+                              <Button
+                                variant="outline"
                                 size="sm"
-                                onClick={() => router.push(`/dashboard/certificates/${certificate.id}`)}
+                                onClick={() =>
+                                  router.push(
+                                    `/dashboard/certificates/${certificate.id}`
+                                  )
+                                }
                               >
                                 Detail
                               </Button>

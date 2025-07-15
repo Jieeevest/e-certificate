@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { formatDate } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { formatDate } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface Student {
   id: string;
@@ -20,7 +20,7 @@ interface Student {
 export default function StudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -29,30 +29,30 @@ export default function StudentsPage() {
         // For now, we'll use mock data from the seed
         // const response = await fetch('/api/students');
         // const data = await response.json();
-        
+
         // Mock data based on our seed
         const data = [
           {
-            id: '307e8165-cde0-4a4f-a5cd-cabfc911d214',
-            nim: '12345678',
-            name: 'Budi Santoso',
-            email: 'budi@example.com',
-            major: 'Teknik Informatika',
-            enrollmentDate: '2025-07-15T12:20:53.268Z',
+            id: "307e8165-cde0-4a4f-a5cd-cabfc911d214",
+            nim: "12345678",
+            name: "Budi Santoso",
+            email: "budi@example.com",
+            major: "Teknik Informatika",
+            enrollmentDate: "2025-07-15T12:20:53.268Z",
           },
           {
-            id: '9966ce0f-6842-47ac-82cb-96d383aec49f',
-            nim: '87654321',
-            name: 'Siti Rahayu',
-            email: 'siti@example.com',
-            major: 'Sistem Informasi',
-            enrollmentDate: '2025-07-15T12:20:53.270Z',
+            id: "9966ce0f-6842-47ac-82cb-96d383aec49f",
+            nim: "87654321",
+            name: "Siti Rahayu",
+            email: "siti@example.com",
+            major: "Sistem Informasi",
+            enrollmentDate: "2025-07-15T12:20:53.270Z",
           },
         ];
-        
+
         setStudents(data);
       } catch (error) {
-        console.error('Error fetching students:', error);
+        console.error("Error fetching students:", error);
       } finally {
         setLoading(false);
       }
@@ -91,7 +91,12 @@ export default function StudentsPage() {
             className="max-w-xs"
           />
           <Link href="/dashboard/students/add">
-            <Button variant="primary">Tambah Mahasiswa</Button>
+            <Button
+              variant="primary"
+              className="text-sm w-[120px] cursor-pointer"
+            >
+              Tambah Data
+            </Button>
           </Link>
         </div>
       </div>
@@ -100,18 +105,20 @@ export default function StudentsPage() {
         <Card>
           <CardContent className="p-6 text-center">
             <p className="text-gray-500">
-              {searchTerm ? 'Tidak ada mahasiswa yang sesuai dengan pencarian.' : 'Belum ada data mahasiswa.'}
+              {searchTerm
+                ? "Tidak ada mahasiswa yang sesuai dengan pencarian."
+                : "Belum ada data mahasiswa."}
             </p>
           </CardContent>
         </Card>
       ) : (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
           {filteredStudents.map((student) => (
-            <motion.div 
+            <motion.div
               key={student.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -122,10 +129,18 @@ export default function StudentsPage() {
                   <CardTitle className="flex justify-between items-start">
                     <div>
                       <div className="text-xl font-bold">{student.name}</div>
-                      <div className="text-sm text-gray-500 mt-1">NIM: {student.nim}</div>
+                      <div className="text-sm text-gray-500 mt-1">
+                        NIM: {student.nim}
+                      </div>
                     </div>
                     <Link href={`/dashboard/students/${student.id}`}>
-                      <Button variant="outline" size="sm">Detail</Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-sm w-[80px] cursor-pointer"
+                      >
+                        Detail
+                      </Button>
                     </Link>
                   </CardTitle>
                 </CardHeader>
@@ -140,7 +155,9 @@ export default function StudentsPage() {
                       <div>{student.major}</div>
                     </div>
                     <div>
-                      <span className="text-sm text-gray-500">Tanggal Masuk:</span>
+                      <span className="text-sm text-gray-500">
+                        Tanggal Masuk:
+                      </span>
                       <div>{formatDate(student.enrollmentDate)}</div>
                     </div>
                   </div>

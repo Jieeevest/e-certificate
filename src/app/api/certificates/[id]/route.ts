@@ -7,10 +7,10 @@ const prisma = new PrismaClient();
 // GET /api/certificates/[id] - Get a specific certificate
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
-    const { id } = params;
+    const { id } = context.params;
 
     // Verify authentication
     const token = request.cookies.get("auth-token")?.value;
@@ -54,10 +54,10 @@ export async function GET(
 // PUT /api/certificates/[id] - Update a certificate
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
-    const { id } = params;
+    const { id } = context.params;
 
     // Verify authentication
     const token = request.cookies.get("auth-token")?.value;
@@ -139,10 +139,10 @@ export async function PUT(
 // DELETE /api/certificates/[id] - Delete a certificate
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
-    const { id } = params;
+    const { id } = context.params;
 
     // Verify authentication
     const token = request.cookies.get("auth-token")?.value;
