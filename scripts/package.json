@@ -1,0 +1,7 @@
+{
+  "name": "e-certificate-scripts",
+  "version": "1.0.0",
+  "description": "Scripts for E-Certificate application",
+  "type": "module",
+  "private": true
+}
