@@ -1,8 +1,6 @@
-import { PrismaClient } from "../../../src/generated/prisma";
 import bcrypt from "bcryptjs";
 import { jwtVerify, SignJWT } from "jose";
-
-const prisma = new PrismaClient();
+import { prisma } from "../db/prisma";
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "default_secret_please_change_in_production"

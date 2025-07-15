@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@/generated/prisma";
 import { getUserFromToken } from "@/lib/auth/auth";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/db/prisma";
 
 // GET /api/dashboard/stats - Get dashboard statistics
 export async function GET(request: NextRequest) {

@@ -1,18 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { getUserFromToken } from "@/lib/auth/auth";
 import bcrypt from "bcryptjs";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/db/prisma";
 
 // GET /api/users/[id] - Get a specific user (admin only)
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Verify authentication
     const token = request.cookies.get("auth-token")?.value;
@@ -63,10 +61,10 @@ export async function GET(
 // PUT /api/users/[id] - Update a user (admin only)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Verify authentication
     const token = request.cookies.get("auth-token")?.value;
@@ -159,10 +157,10 @@ export async function PUT(
 // DELETE /api/users/[id] - Delete a user (admin only)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Verify authentication
     const token = request.cookies.get("auth-token")?.value;

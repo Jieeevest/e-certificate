@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { getUserFromToken } from "@/lib/auth/auth";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/db/prisma";
 
 // GET /api/certificates - Get all certificates
 export async function GET(request: NextRequest) {
@@ -105,7 +103,7 @@ export async function POST(request: NextRequest) {
         title,
         description: description || "",
         studentId,
-        issueDate: issueDate ? new Date(issueDate) : null,
+        issueDate: issueDate ? new Date(issueDate) : undefined,
         status: "PENDING", // Default status
       },
       include: {

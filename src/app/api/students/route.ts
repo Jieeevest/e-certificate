@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { getUserFromToken } from "@/lib/auth/auth";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/db/prisma";
 
 // GET /api/students - Get all students
 export async function GET(request: NextRequest) {
@@ -27,9 +25,9 @@ export async function GET(request: NextRequest) {
     const students = await prisma.student.findMany({
       where: {
         OR: [
-          { name: { contains: search, mode: "insensitive" } },
-          { nim: { contains: search, mode: "insensitive" } },
-          { major: { contains: search, mode: "insensitive" } },
+          { name: { contains: search } },
+          { nim: { contains: search } },
+          { major: { contains: search } },
         ],
       },
       orderBy: { name: "asc" },
@@ -89,6 +87,7 @@ export async function POST(request: NextRequest) {
     const newStudent = await prisma.student.create({
       data: {
         nim,
+        email: `${nim}@student.test.id`,
         name,
         major,
         year,

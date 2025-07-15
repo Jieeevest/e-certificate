@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import {
   Card,
@@ -30,12 +31,9 @@ interface Certificate {
   };
 }
 
-export default function PublicCertificatePage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default function PublicCertificatePage() {
   const router = useRouter();
+  const params = useParams<{ id: string }>();
   const { id } = params;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

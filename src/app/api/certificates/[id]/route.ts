@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { getUserFromToken } from "@/lib/auth/auth";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/db/prisma";
 
 // GET /api/certificates/[id] - Get a specific certificate
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = context.params;
+    const { id } = await params;
 
     // Verify authentication
     const token = request.cookies.get("auth-token")?.value;
@@ -54,10 +52,10 @@ export async function GET(
 // PUT /api/certificates/[id] - Update a certificate
 export async function PUT(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = context.params;
+    const { id } = await params;
 
     // Verify authentication
     const token = request.cookies.get("auth-token")?.value;
@@ -116,7 +114,7 @@ export async function PUT(
         title,
         description: description || "",
         studentId,
-        issueDate: issueDate ? new Date(issueDate) : null,
+        issueDate: issueDate ? new Date(issueDate) : undefined,
         status: status || existingCertificate.status,
       },
       include: {
@@ -139,10 +137,10 @@ export async function PUT(
 // DELETE /api/certificates/[id] - Delete a certificate
 export async function DELETE(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = context.params;
+    const { id } = await params;
 
     // Verify authentication
     const token = request.cookies.get("auth-token")?.value;

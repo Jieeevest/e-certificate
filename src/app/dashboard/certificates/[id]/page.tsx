@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,8 +24,9 @@ interface Certificate {
   };
 }
 
-export default function CertificateDetailPage({ params }: { params: { id: string } }) {
+export default function CertificateDetailPage() {
   const router = useRouter();
+  const params = useParams<{ id: string }>();
   const { id } = params;
   const [certificate, setCertificate] = useState<Certificate | null>(null);
   const [loading, setLoading] = useState(true);
