@@ -18,7 +18,8 @@ export async function login(username: string, password: string) {
     }
 
     // Compare password
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    // const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = password === user.password;
 
     if (!passwordMatch) {
       return { success: false, message: "Password salah" };
