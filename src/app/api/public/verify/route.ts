@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db/prisma';
+import { jsonDb } from '@/lib/db/jsonDb';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,25 +13,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Find certificate with student information
-    const certificate = await prisma.certificate.findUnique({
+    // Find certificate
+    const certificate = await (await jsonDb.certificate()).findUnique({
       where: { id: certificateId },
-      include: {
-        student: {
-          select: {
-            id: true,
-            nim: true,
-            name: true,
-            major: true,
-            enrollmentDate: true,
-          },
-        },
-      },
     });
-
+    
     if (!certificate) {
       return NextResponse.json(
         { success: false, message: 'Sertifikat tidak ditemukan' },
+        { status: 404 }
+      );
+    }
+    
+    // Find student information
+    const student = await (await jsonDb.student()).findUnique({
+      where: { id: certificate.studentId },
+    });
+    
+    if (!student) {
+      return NextResponse.json(
+        { success: false, message: 'Data siswa tidak ditemukan' },
         { status: 404 }
       );
     }
@@ -46,7 +47,13 @@ export async function POST(request: NextRequest) {
         issueDate: certificate.issueDate,
         expiryDate: certificate.expiryDate,
         status: certificate.status,
-        student: certificate.student,
+        student: {
+          id: student.id,
+          nim: student.nim,
+          name: student.name,
+          major: student.major,
+          enrollmentDate: student.enrollmentDate,
+        },
       },
     });
   } catch (error) {
@@ -55,7 +62,5 @@ export async function POST(request: NextRequest) {
       { success: false, message: 'Terjadi kesalahan pada server' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

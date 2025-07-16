@@ -20,6 +20,7 @@ export default function AddStudentPage() {
   const [formData, setFormData] = useState({
     nim: "",
     name: "",
+    email: "",
     major: "",
     year: new Date().getFullYear(),
   });
@@ -48,22 +49,19 @@ export default function AddStudentPage() {
     setLoading(true);
 
     try {
-      // In a real application, you would call an API to create the student
-      // const response = await fetch('/api/students', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(formData),
-      // });
-      //
-      // if (!response.ok) {
-      //   const errorData = await response.json();
-      //   throw new Error(errorData.message || 'Failed to create student');
-      // }
-
-      // For now, we'll just simulate a successful creation
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Call the API to create the student
+      const response = await fetch('/api/students', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create student');
+      }
 
       // Redirect to students page
       router.push("/dashboard/students");
@@ -125,6 +123,21 @@ export default function AddStudentPage() {
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Nama lengkap mahasiswa"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-sm font-medium">
+                Email
+              </label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Email mahasiswa"
                 required
               />
             </div>

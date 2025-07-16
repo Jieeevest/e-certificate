@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUserFromToken } from "@/lib/auth/auth";
-import { prisma } from "@/lib/db/prisma";
+import { jsonDb } from "@/lib/db/jsonDb";
 
 // GET /api/students - Get all students
 export async function GET(request: NextRequest) {
@@ -21,17 +21,22 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const search = searchParams.get("search") || "";
 
-    // Get all students with optional search
-    const students = await prisma.student.findMany({
-      where: {
-        OR: [
-          { name: { contains: search } },
-          { nim: { contains: search } },
-          { major: { contains: search } },
-        ],
-      },
-      orderBy: { name: "asc" },
-    });
+    // Get all students
+    let students = await (await jsonDb.student()).findMany();
+
+    // Apply search filter if provided
+    if (search && search.trim() !== "") {
+      const searchLower = search.toLowerCase();
+      students = students.filter(
+        (student) =>
+          student.name.toLowerCase().includes(searchLower) ||
+          student.nim.toLowerCase().includes(searchLower) ||
+          student.major.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Sort by name
+    students.sort((a, b) => a.name.localeCompare(b.name));
 
     return NextResponse.json({ students });
   } catch (error) {
@@ -40,8 +45,6 @@ export async function GET(request: NextRequest) {
       { error: "Internal server error" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -72,7 +75,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if NIM already exists
-    const existingStudent = await prisma.student.findUnique({
+    const existingStudent = await (
+      await jsonDb.student()
+    ).findUnique({
       where: { nim },
     });
 
@@ -84,13 +89,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Create student
-    const newStudent = await prisma.student.create({
+    const newStudent = await (
+      await jsonDb.student()
+    ).create({
       data: {
         nim,
         email: `${nim}@student.test.id`,
         name,
         major,
         year,
+        enrollmentDate: new Date().toISOString(),
       },
     });
 
@@ -101,7 +109,5 @@ export async function POST(request: NextRequest) {
       { error: "Internal server error" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

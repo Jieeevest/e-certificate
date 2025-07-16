@@ -38,35 +38,17 @@ export default function AddCertificatePage() {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        // In a real application, you would fetch this data from an API
-        // const response = await fetch('/api/students');
-        // if (!response.ok) {
-        //   throw new Error('Failed to fetch students');
-        // }
-        // const data = await response.json();
-        // setStudents(data.students);
-
-        // Mock data for now
-        const mockStudents: Student[] = [
-          {
-            id: "student1",
-            nim: "S12345",
-            name: "John Doe",
-            major: "Computer Science",
-          },
-          {
-            id: "student2",
-            nim: "S67890",
-            name: "Jane Smith",
-            major: "Information Systems",
-          },
-        ];
-
-        setStudents(mockStudents);
+        // Fetch students from API
+        const response = await fetch('/api/students');
+        if (!response.ok) {
+          throw new Error('Failed to fetch students');
+        }
+        const { students } = await response.json();
+        setStudents(students);
 
         // If studentId is provided in URL and exists in the list, select it
         if (studentId) {
-          const student = mockStudents.find((s) => s.id === studentId);
+          const student = students.find((s: Student) => s.id === studentId);
           if (student) {
             setFormData((prev) => ({ ...prev, studentId }));
           }
@@ -105,24 +87,19 @@ export default function AddCertificatePage() {
     setLoading(true);
 
     try {
-      // In a real application, you would call an API to create the certificate
-      // const response = await fetch('/api/certificates', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(formData),
-      // });
-      //
-      // if (!response.ok) {
-      //   const errorData = await response.json();
-      //   throw new Error(errorData.message || 'Failed to create certificate');
-      // }
-      //
-      // const data = await response.json();
-
-      // For now, we'll just simulate a successful creation
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Call API to create the certificate
+      const response = await fetch('/api/certificates', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create certificate');
+      }
 
       // Redirect to certificates page or student detail page if came from there
       if (studentId) {

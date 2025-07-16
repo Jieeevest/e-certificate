@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUserFromToken } from "@/lib/auth/auth";
-import { prisma } from "@/lib/db/prisma";
+import { jsonDb } from "@/lib/db/jsonDb";
 
 // GET /api/dashboard/stats - Get dashboard statistics
 export async function GET(request: NextRequest) {
@@ -18,30 +18,19 @@ export async function GET(request: NextRequest) {
     }
 
     // Get total students count
-    const totalStudents = await prisma.student.count();
+    const totalStudents = await jsonDb.count('student');
 
     // Get total certificates count
-    const totalCertificates = await prisma.certificate.count();
-
-    // Get pending certificates count
-    const pendingCertificates = await prisma.certificate.count({
-      where: { status: "PENDING" },
-    });
-
-    // Get issued certificates count
-    const issuedCertificates = await prisma.certificate.count({
-      where: { status: "ISSUED" },
-    });
-
-    // Get revoked certificates count
-    const revokedCertificates = await prisma.certificate.count({
-      where: { status: "REVOKED" },
-    });
-
-    // Get expired certificates count
-    const expiredCertificates = await prisma.certificate.count({
-      where: { status: "EXPIRED" },
-    });
+    const totalCertificates = await jsonDb.count('certificate');
+    
+    // Get certificates by status
+    const statusCounts = await jsonDb.countCertificatesByStatus();
+    
+    // Extract counts by status
+    const pendingCertificates = statusCounts.PENDING || 0;
+    const issuedCertificates = statusCounts.ISSUED || 0;
+    const revokedCertificates = statusCounts.REVOKED || 0;
+    const expiredCertificates = statusCounts.EXPIRED || 0;
 
     // Return statistics
     return NextResponse.json({
@@ -58,7 +47,5 @@ export async function GET(request: NextRequest) {
       { error: "Internal server error" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

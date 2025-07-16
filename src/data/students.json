@@ -1,0 +1,27 @@
+[
+  {
+    "id": "1",
+    "nim": "12345",
+    "name": "Contoh Siswa",
+    "email": "siswa@example.com",
+    "phone": "081234567890",
+    "address": "Jl. Contoh No. 123",
+    "dateOfBirth": "2000-01-01T00:00:00.000Z",
+    "year": "2023",
+    "enrollmentDate": "2023-01-01T00:00:00.000Z",
+    "major": "Teknik Informatika",
+    "createdAt": "2023-01-01T00:00:00.000Z",
+    "updatedAt": "2023-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "a91a782b-a370-45ab-976a-490112fa7655",
+    "nim": "123123",
+    "email": "123123@student.test.id",
+    "name": "iqbal",
+    "major": "TI",
+    "year": 2025,
+    "enrollmentDate": "2025-07-16T13:11:06.296Z",
+    "createdAt": "2025-07-16T13:11:06.296Z",
+    "updatedAt": "2025-07-16T13:11:06.296Z"
+  }
+]

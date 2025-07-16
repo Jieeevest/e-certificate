@@ -1,0 +1,24 @@
+[
+  {
+    "id": "1",
+    "title": "Contoh Sertifikat",
+    "description": "Ini adalah contoh sertifikat",
+    "issueDate": "2023-01-01T00:00:00.000Z",
+    "expiryDate": "2024-01-01T00:00:00.000Z",
+    "studentId": "1",
+    "fileUrl": "/certificates/contoh.pdf",
+    "status": "ISSUED",
+    "createdAt": "2023-01-01T00:00:00.000Z",
+    "updatedAt": "2023-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "57c28eb0-93c4-4bad-bf6f-782e4fd67a1f",
+    "title": "hello",
+    "description": "desc",
+    "studentId": "a91a782b-a370-45ab-976a-490112fa7655",
+    "issueDate": "2025-07-16T13:18:16.433Z",
+    "status": "PENDING",
+    "createdAt": "2025-07-16T13:18:16.433Z",
+    "updatedAt": "2025-07-16T13:18:16.433Z"
+  }
+]

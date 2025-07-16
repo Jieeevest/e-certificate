@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
 import { getUserFromToken } from "@/lib/auth/auth";
-import { prisma } from "@/lib/db/prisma";
+import { jsonDb } from "@/lib/db/jsonDb";
 
 // GET /api/certificates - Get all certificates
 export async function GET(request: NextRequest) {
@@ -23,32 +23,47 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search") || "";
     const status = searchParams.get("status") || undefined;
 
-    // Build where clause
-    const whereClause: any = {};
+    // Get all certificates
+    const allCertificates = await (await jsonDb.certificate()).findMany({});
 
-    // Add search condition if provided
-    if (search) {
-      whereClause.OR = [
-        { title: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
-        { student: { name: { contains: search, mode: "insensitive" } } },
-        { student: { nim: { contains: search, mode: "insensitive" } } },
-      ];
-    }
+    // Get all students for joining
+    const allStudents = await (await jsonDb.student()).findMany();
 
-    // Add status filter if provided
+    // Create a map of students by ID for quick lookup
+    const studentsMap = allStudents.reduce((map, student) => {
+      map[student.id] = student;
+      return map;
+    }, {} as Record<string, any>);
+
+    // Filter certificates based on search and status
+    let certificates = allCertificates
+      .map((cert) => ({
+        ...cert,
+        student: studentsMap[cert.studentId] || null,
+      }))
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+    // Apply status filter if provided
     if (status) {
-      whereClause.status = status;
+      certificates = certificates.filter((cert) => cert.status === status);
     }
 
-    // Get all certificates with optional search and filter
-    const certificates = await prisma.certificate.findMany({
-      where: whereClause,
-      include: {
-        student: true,
-      },
-      orderBy: { createdAt: "desc" },
-    });
+    // Apply search filter if provided
+    if (search && search.trim() !== "") {
+      const searchLower = search.toLowerCase();
+      certificates = certificates.filter(
+        (cert) =>
+          cert.title.toLowerCase().includes(searchLower) ||
+          (cert.description &&
+            cert.description.toLowerCase().includes(searchLower)) ||
+          (cert.student &&
+            cert.student.name.toLowerCase().includes(searchLower)) ||
+          (cert.student && cert.student.nim.toLowerCase().includes(searchLower))
+      );
+    }
 
     return NextResponse.json({ certificates });
   } catch (error) {
@@ -57,8 +72,6 @@ export async function GET(request: NextRequest) {
       { error: "Internal server error" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -89,7 +102,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if student exists
-    const student = await prisma.student.findUnique({
+    const student = await (
+      await jsonDb.student()
+    ).findUnique({
       where: { id: studentId },
     });
 
@@ -98,27 +113,35 @@ export async function POST(request: NextRequest) {
     }
 
     // Create certificate
-    const newCertificate = await prisma.certificate.create({
+    const newCertificate = await (
+      await jsonDb.certificate()
+    ).create({
       data: {
         title,
         description: description || "",
         studentId,
-        issueDate: issueDate ? new Date(issueDate) : undefined,
+        issueDate: issueDate
+          ? new Date(issueDate).toISOString()
+          : new Date().toISOString(),
         status: "PENDING", // Default status
-      },
-      include: {
-        student: true,
       },
     });
 
-    return NextResponse.json({ certificate: newCertificate }, { status: 201 });
+    // Include student data in response
+    const certificateWithStudent = {
+      ...newCertificate,
+      student,
+    };
+
+    return NextResponse.json(
+      { certificate: certificateWithStudent },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Error creating certificate:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

@@ -1,6 +1,5 @@
-import bcrypt from "bcryptjs";
 import { jwtVerify, SignJWT } from "jose";
-import { prisma } from "../db/prisma";
+import { jsonDb } from "../db/jsonDb";
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "default_secret_please_change_in_production"
@@ -9,7 +8,9 @@ const JWT_SECRET = new TextEncoder().encode(
 export async function login(username: string, password: string) {
   try {
     // Find user by username
-    const user = await prisma.user.findUnique({
+    const user = await (
+      await jsonDb.user()
+    ).findUnique({
       where: { username },
     });
 
@@ -71,7 +72,9 @@ export async function getUserFromToken(token: string) {
   }
 
   try {
-    const user = await prisma.user.findUnique({
+    const user = await (
+      await jsonDb.user()
+    ).findUnique({
       where: { id: payload.id as string },
     });
 

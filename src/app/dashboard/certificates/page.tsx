@@ -29,15 +29,20 @@ export default function CertificatesPage() {
   useEffect(() => {
     const fetchCertificates = async () => {
       try {
-        // In a real application, you would fetch this data from an API
-        // For now, we'll use empty data since we haven't created any certificates yet
-        // const response = await fetch('/api/certificates');
-        // const data = await response.json();
-
-        // Empty data for now
-        const data: Certificate[] = [];
-
-        setCertificates(data);
+        setLoading(true);
+        // Build query parameters for filtering
+        const params = new URLSearchParams();
+        if (searchTerm) params.append('search', searchTerm);
+        if (statusFilter !== 'ALL') params.append('status', statusFilter);
+        
+        // Fetch certificates from API
+        const response = await fetch(`/api/certificates?${params.toString()}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch certificates');
+        }
+        
+        const data = await response.json();
+        setCertificates(data.certificates);
       } catch (error) {
         console.error("Error fetching certificates:", error);
       } finally {
@@ -46,7 +51,7 @@ export default function CertificatesPage() {
     };
 
     fetchCertificates();
-  }, []);
+  }, [searchTerm, statusFilter]);
 
   const filteredCertificates = certificates.filter((certificate) => {
     const searchLower = searchTerm.toLowerCase();

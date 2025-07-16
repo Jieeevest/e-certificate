@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUserFromToken } from "@/lib/auth/auth";
-import { prisma } from "@/lib/db/prisma";
+import { jsonDb } from "@/lib/db/jsonDb";
 
 // GET /api/certificates/[id] - Get a specific certificate
 export async function GET(
@@ -23,12 +23,21 @@ export async function GET(
     }
 
     // Get certificate
-    const certificate = await prisma.certificate.findUnique({
+    const certificate = await (
+      await jsonDb.certificate()
+    ).findUnique({
       where: { id },
-      include: {
-        student: true,
-      },
     });
+
+    // Get student data if certificate exists
+    let student = null;
+    if (certificate) {
+      student = await (
+        await jsonDb.student()
+      ).findUnique({
+        where: { id: certificate.studentId },
+      });
+    }
 
     if (!certificate) {
       return NextResponse.json(
@@ -37,15 +46,18 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({ certificate });
+    return NextResponse.json({
+      certificate: {
+        ...certificate,
+        student,
+      },
+    });
   } catch (error) {
     console.error("Error getting certificate:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -82,7 +94,9 @@ export async function PUT(
     }
 
     // Check if certificate exists
-    const existingCertificate = await prisma.certificate.findUnique({
+    const existingCertificate = await (
+      await jsonDb.certificate()
+    ).findUnique({
       where: { id },
     });
 
@@ -95,7 +109,9 @@ export async function PUT(
 
     // Check if student exists
     if (studentId) {
-      const student = await prisma.student.findUnique({
+      const student = await (
+        await jsonDb.student()
+      ).findUnique({
         where: { id: studentId },
       });
 
@@ -108,29 +124,40 @@ export async function PUT(
     }
 
     // Update certificate
-    const updatedCertificate = await prisma.certificate.update({
+    const updatedCertificate = await (
+      await jsonDb.certificate()
+    ).update({
       where: { id },
       data: {
         title,
         description: description || "",
         studentId,
-        issueDate: issueDate ? new Date(issueDate) : undefined,
+        issueDate: issueDate
+          ? new Date(issueDate).toISOString()
+          : existingCertificate.issueDate,
         status: status || existingCertificate.status,
-      },
-      include: {
-        student: true,
       },
     });
 
-    return NextResponse.json({ certificate: updatedCertificate });
+    // Get student data
+    const student = await (
+      await jsonDb.student()
+    ).findUnique({
+      where: { id: updatedCertificate?.studentId },
+    });
+
+    return NextResponse.json({
+      certificate: {
+        ...updatedCertificate,
+        student,
+      },
+    });
   } catch (error) {
     console.error("Error updating certificate:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -155,7 +182,9 @@ export async function DELETE(
     }
 
     // Check if certificate exists
-    const existingCertificate = await prisma.certificate.findUnique({
+    const existingCertificate = await (
+      await jsonDb.certificate()
+    ).findUnique({
       where: { id },
     });
 
@@ -167,7 +196,9 @@ export async function DELETE(
     }
 
     // Delete certificate
-    await prisma.certificate.delete({
+    await (
+      await jsonDb.certificate()
+    ).delete({
       where: { id },
     });
 
@@ -178,7 +209,5 @@ export async function DELETE(
       { error: "Internal server error" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

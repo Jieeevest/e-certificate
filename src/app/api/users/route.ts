@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUserFromToken } from "@/lib/auth/auth";
 import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/db/prisma";
+import { jsonDb } from "@/lib/db/jsonDb";
 
 // GET /api/users - Get all users (admin only)
 export async function GET(request: NextRequest) {
@@ -24,16 +24,17 @@ export async function GET(request: NextRequest) {
     }
 
     // Get all users
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        username: true,
-        name: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
+    const allUsers = await (await jsonDb.user()).findMany();
+
+    // Remove password from response
+    const users = allUsers.map((user) => ({
+      id: user.id,
+      username: user.username,
+      name: user.name,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    }));
 
     return NextResponse.json({ users });
   } catch (error) {
@@ -42,8 +43,6 @@ export async function GET(request: NextRequest) {
       { error: "Internal server error" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -79,7 +78,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if username already exists
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await (
+      await jsonDb.user()
+    ).findUnique({
       where: { username },
     });
 
@@ -94,22 +95,26 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user
-    const newUser = await prisma.user.create({
+    const createdUser = await (
+      await jsonDb.user()
+    ).create({
       data: {
         username,
         name,
         password: hashedPassword,
         role: role || "STAFF",
       },
-      select: {
-        id: true,
-        username: true,
-        name: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
-      },
     });
+
+    // Remove password from response
+    const newUser = {
+      id: createdUser.id,
+      username: createdUser.username,
+      name: createdUser.name,
+      role: createdUser.role,
+      createdAt: createdUser.createdAt,
+      updatedAt: createdUser.updatedAt,
+    };
 
     return NextResponse.json({ user: newUser }, { status: 201 });
   } catch (error) {
@@ -118,7 +123,5 @@ export async function POST(request: NextRequest) {
       { error: "Internal server error" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

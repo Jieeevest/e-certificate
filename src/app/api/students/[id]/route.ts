@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUserFromToken } from "@/lib/auth/auth";
-import { prisma } from "@/lib/db/prisma";
+import { jsonDb } from "@/lib/db/jsonDb";
 
 // GET /api/students/[id] - Get a specific student
 export async function GET(
@@ -23,26 +23,31 @@ export async function GET(
     }
 
     // Get student
-    const student = await prisma.student.findUnique({
+    const student = await (await jsonDb.student()).findUnique({
       where: { id },
-      include: {
-        certificates: true,
-      },
     });
+    
+    // Get certificates for this student
+    const certificates = student ? await (await jsonDb.certificate()).findMany({
+      where: { studentId: id },
+    }) : [];
 
     if (!student) {
       return NextResponse.json({ error: "Student not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ student });
+    return NextResponse.json({ 
+      student: {
+        ...student,
+        certificates
+      }
+    });
   } catch (error) {
     console.error("Error getting student:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -78,7 +83,7 @@ export async function PUT(
     }
 
     // Check if student exists
-    const existingStudent = await prisma.student.findUnique({
+    const existingStudent = await (await jsonDb.student()).findUnique({
       where: { id },
     });
 
@@ -88,7 +93,7 @@ export async function PUT(
 
     // Check if NIM already exists (for another student)
     if (nim !== existingStudent.nim) {
-      const nimExists = await prisma.student.findUnique({
+      const nimExists = await (await jsonDb.student()).findUnique({
         where: { nim },
       });
 
@@ -101,7 +106,7 @@ export async function PUT(
     }
 
     // Update student
-    const updatedStudent = await prisma.student.update({
+    const updatedStudent = await (await jsonDb.student()).update({
       where: { id },
       data: {
         nim,
@@ -118,8 +123,6 @@ export async function PUT(
       { error: "Internal server error" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -144,17 +147,21 @@ export async function DELETE(
     }
 
     // Check if student exists
-    const existingStudent = await prisma.student.findUnique({
+    const existingStudent = await (await jsonDb.student()).findUnique({
       where: { id },
-      include: { certificates: true },
     });
+    
+    // Get certificates for this student
+    const certificates = existingStudent ? await (await jsonDb.certificate()).findMany({
+      where: { studentId: id },
+    }) : [];
 
     if (!existingStudent) {
       return NextResponse.json({ error: "Student not found" }, { status: 404 });
     }
 
     // Check if student has certificates
-    if (existingStudent.certificates.length > 0) {
+    if (certificates.length > 0) {
       return NextResponse.json(
         { error: "Cannot delete student with certificates" },
         { status: 400 }
@@ -162,7 +169,7 @@ export async function DELETE(
     }
 
     // Delete student
-    await prisma.student.delete({
+    await (await jsonDb.student()).delete({
       where: { id },
     });
 
@@ -173,7 +180,5 @@ export async function DELETE(
       { error: "Internal server error" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

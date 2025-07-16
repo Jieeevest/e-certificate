@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUserFromToken } from "@/lib/auth/auth";
 import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/db/prisma";
+import { jsonDb } from "@/lib/db/jsonDb";
 
 // GET /api/users/[id] - Get a specific user (admin only)
 export async function GET(
@@ -30,17 +30,23 @@ export async function GET(
     }
 
     // Get user
-    const user = await prisma.user.findUnique({
+    const fullUser = await (
+      await jsonDb.user()
+    ).findUnique({
       where: { id },
-      select: {
-        id: true,
-        username: true,
-        name: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
-      },
     });
+
+    // Remove password from response
+    const user = fullUser
+      ? {
+          id: fullUser.id,
+          username: fullUser.username,
+          name: fullUser.name,
+          role: fullUser.role,
+          createdAt: fullUser.createdAt,
+          updatedAt: fullUser.updatedAt,
+        }
+      : null;
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -53,8 +59,6 @@ export async function GET(
       { error: "Internal server error" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -95,7 +99,9 @@ export async function PUT(
     }
 
     // Check if user exists
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await (
+      await jsonDb.user()
+    ).findUnique({
       where: { id },
     });
 
@@ -105,7 +111,9 @@ export async function PUT(
 
     // Check if username already exists (for another user)
     if (username !== existingUser.username) {
-      const usernameExists = await prisma.user.findUnique({
+      const usernameExists = await (
+        await jsonDb.user()
+      ).findUnique({
         where: { username },
       });
 
@@ -129,18 +137,22 @@ export async function PUT(
       updateData.password = await bcrypt.hash(password, 10);
     }
 
-    const updatedUser = await prisma.user.update({
+    const fullUpdatedUser = await (
+      await jsonDb.user()
+    ).update({
       where: { id },
       data: updateData,
-      select: {
-        id: true,
-        username: true,
-        name: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
-      },
     });
+
+    // Remove password from response
+    const updatedUser = {
+      id: fullUpdatedUser?.id,
+      username: fullUpdatedUser?.username,
+      name: fullUpdatedUser?.name,
+      role: fullUpdatedUser?.role,
+      createdAt: fullUpdatedUser?.createdAt,
+      updatedAt: fullUpdatedUser?.updatedAt,
+    };
 
     return NextResponse.json({ user: updatedUser });
   } catch (error) {
@@ -149,8 +161,6 @@ export async function PUT(
       { error: "Internal server error" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -180,7 +190,9 @@ export async function DELETE(
     }
 
     // Check if user exists
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await (
+      await jsonDb.user()
+    ).findUnique({
       where: { id },
     });
 
@@ -197,7 +209,9 @@ export async function DELETE(
     }
 
     // Delete user
-    await prisma.user.delete({
+    await (
+      await jsonDb.user()
+    ).delete({
       where: { id },
     });
 
@@ -208,7 +222,5 @@ export async function DELETE(
       { error: "Internal server error" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

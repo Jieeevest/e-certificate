@@ -25,32 +25,13 @@ export default function StudentsPage() {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        // In a real application, you would fetch this data from an API
-        // For now, we'll use mock data from the seed
-        // const response = await fetch('/api/students');
-        // const data = await response.json();
-
-        // Mock data based on our seed
-        const data = [
-          {
-            id: "307e8165-cde0-4a4f-a5cd-cabfc911d214",
-            nim: "12345678",
-            name: "Budi Santoso",
-            email: "budi@example.com",
-            major: "Teknik Informatika",
-            enrollmentDate: "2025-07-15T12:20:53.268Z",
-          },
-          {
-            id: "9966ce0f-6842-47ac-82cb-96d383aec49f",
-            nim: "87654321",
-            name: "Siti Rahayu",
-            email: "siti@example.com",
-            major: "Sistem Informasi",
-            enrollmentDate: "2025-07-15T12:20:53.270Z",
-          },
-        ];
-
-        setStudents(data);
+        // Fetch data from the API
+        const response = await fetch('/api/students');
+        if (!response.ok) {
+          throw new Error('Failed to fetch students');
+        }
+        const { students } = await response.json();
+        setStudents(students);
       } catch (error) {
         console.error("Error fetching students:", error);
       } finally {
