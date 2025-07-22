@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { formatDate } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { PlusCircle, Search, Eye, Award, Filter } from "lucide-react";
 
 interface Certificate {
   id: string;
@@ -32,15 +33,15 @@ export default function CertificatesPage() {
         setLoading(true);
         // Build query parameters for filtering
         const params = new URLSearchParams();
-        if (searchTerm) params.append('search', searchTerm);
-        if (statusFilter !== 'ALL') params.append('status', statusFilter);
-        
+        if (searchTerm) params.append("search", searchTerm);
+        if (statusFilter !== "ALL") params.append("status", statusFilter);
+
         // Fetch certificates from API
         const response = await fetch(`/api/certificates?${params.toString()}`);
         if (!response.ok) {
-          throw new Error('Failed to fetch certificates');
+          throw new Error("Failed to fetch certificates");
         }
-        
+
         const data = await response.json();
         setCertificates(data.certificates);
       } catch (error) {
@@ -107,30 +108,40 @@ export default function CertificatesPage() {
   return (
     <div className="px-4">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-        <h1 className="text-2xl font-bold mb-4 md:mb-0">Daftar Sertifikat</h1>
+        <div className="flex items-center gap-2 mb-4 md:mb-0">
+          <Award className="h-6 w-6 text-primary" />
+          <h1 className="text-2xl font-bold">Daftar Sertifikat</h1>
+        </div>
         <div className="flex flex-col sm:flex-row gap-4">
-          <Input
-            placeholder="Cari sertifikat..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="max-w-xs"
-          />
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="ALL">Semua Status</option>
-            <option value="PENDING">Menunggu</option>
-            <option value="ISSUED">Terbit</option>
-            <option value="EXPIRED">Kadaluarsa</option>
-            <option value="REVOKED">Dicabut</option>
-          </select>
+          <div className="relative max-w-xs">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Cari sertifikat..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="max-w-xs pl-10"
+            />
+          </div>
+          <div className="relative">
+            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="h-10 rounded-md border border-gray-300 bg-white px-3 py-2 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[150px]"
+            >
+              <option value="ALL">Semua Status</option>
+              <option value="PENDING">Menunggu</option>
+              <option value="ISSUED">Terbit</option>
+              <option value="EXPIRED">Kadaluarsa</option>
+              <option value="REVOKED">Dicabut</option>
+            </select>
+          </div>
           <Link href="/dashboard/certificates/add">
             <Button
               variant="primary"
-              className="text-sm w-[120px] cursor-pointer"
+              className="text-sm w-[150px] cursor-pointer"
             >
+              <PlusCircle className="mr-2 h-4 w-4" />
               Tambah Data
             </Button>
           </Link>
@@ -147,7 +158,10 @@ export default function CertificatesPage() {
             </p>
             <div className="mt-4">
               <Link href="/dashboard/certificates/add">
-                <Button variant="outline">Tambah Sertifikat Baru</Button>
+                <Button variant="outline" className="cursor-pointer">
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Tambah Sertifikat Baru
+                </Button>
               </Link>
             </div>
           </CardContent>
@@ -183,7 +197,12 @@ export default function CertificatesPage() {
                       </div>
                     </div>
                     <Link href={`/dashboard/certificates/${certificate.id}`}>
-                      <Button variant="outline" size="sm">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-sm w-[80px] cursor-pointer"
+                      >
+                        <Eye className="mr-1 h-3 w-3" />
                         Detail
                       </Button>
                     </Link>

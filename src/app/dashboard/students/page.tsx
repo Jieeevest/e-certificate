@@ -27,9 +27,9 @@ export default function StudentsPage() {
     const fetchStudents = async () => {
       try {
         // Fetch data from the API
-        const response = await fetch('/api/students');
+        const response = await fetch("/api/students");
         if (!response.ok) {
-          throw new Error('Failed to fetch students');
+          throw new Error("Failed to fetch students");
         }
         const { students } = await response.json();
         setStudents(students);
@@ -77,9 +77,9 @@ export default function StudentsPage() {
           </div>
           <Link href="/dashboard/students/add">
             <Button
-                variant="primary"
-                className="text-sm w-[120px] cursor-pointer"
-              >
+              variant="primary"
+              className="text-sm w-[150px] cursor-pointer"
+            >
               <UserPlus className="mr-2 h-4 w-4" />
               Tambah Data
             </Button>

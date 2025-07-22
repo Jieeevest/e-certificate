@@ -40,6 +40,8 @@ export async function GET(request: NextRequest) {
       .map((cert) => ({
         ...cert,
         student: studentsMap[cert.studentId] || null,
+        studentName: studentsMap[cert.studentId]?.name || "",
+        studentNim: studentsMap[cert.studentId]?.nim || "",
       }))
       .sort(
         (a, b) =>

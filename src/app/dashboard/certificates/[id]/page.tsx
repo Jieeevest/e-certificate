@@ -1,18 +1,28 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { formatDate } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatDate } from "@/lib/utils";
+import { motion } from "framer-motion";
+import {
+  Award,
+  Edit,
+  Trash2,
+  ArrowLeft,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Eye,
+} from "lucide-react";
 
 interface Certificate {
   id: string;
   title: string;
   description: string;
-  status: 'PENDING' | 'ISSUED' | 'REVOKED';
+  status: "PENDING" | "ISSUED" | "REVOKED";
   issueDate: string | null;
   createdAt: string;
   student: {
@@ -30,41 +40,22 @@ export default function CertificateDetailPage() {
   const { id } = params;
   const [certificate, setCertificate] = useState<Certificate | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchCertificate = async () => {
       try {
-        // In a real application, you would fetch this data from an API
-        // const response = await fetch(`/api/certificates/${id}`);
-        // if (!response.ok) {
-        //   throw new Error('Failed to fetch certificate');
-        // }
-        // const data = await response.json();
-        // setCertificate(data.certificate);
-
-        // Mock data for now
-        const mockCertificate: Certificate = {
-          id,
-          title: 'Web Development Certificate',
-          description: 'Completed the web development course with excellence',
-          status: 'PENDING',
-          issueDate: null,
-          createdAt: new Date().toISOString(),
-          student: {
-            id: 'student1',
-            nim: 'S12345',
-            name: 'John Doe',
-            major: 'Computer Science',
-            year: 2023,
-          },
-        };
-
-        setCertificate(mockCertificate);
+        // Fetch data from API
+        const response = await fetch(`/api/certificates/${id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch certificate');
+        }
+        const data = await response.json();
+        setCertificate(data.certificate);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching certificate:', error);
-        setError('Failed to load certificate data');
+        console.error("Error fetching certificate:", error);
+        setError("Failed to load certificate data");
         setLoading(false);
       }
     };
@@ -72,61 +63,51 @@ export default function CertificateDetailPage() {
     fetchCertificate();
   }, [id]);
 
-  const handleStatusChange = async (newStatus: 'PENDING' | 'ISSUED' | 'REVOKED') => {
+  const handleStatusChange = async (
+    newStatus: "PENDING" | "ISSUED" | "REVOKED"
+  ) => {
     try {
-      // In a real application, you would call an API to update the certificate status
-      // const response = await fetch(`/api/certificates/${id}`, {
-      //   method: 'PUT',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({
-      //     ...certificate,
-      //     status: newStatus,
-      //     issueDate: newStatus === 'ISSUED' ? new Date().toISOString() : certificate?.issueDate,
-      //   }),
-      // });
-      // 
-      // if (!response.ok) {
-      //   throw new Error('Failed to update certificate status');
-      // }
-      // 
-      // const data = await response.json();
-      // setCertificate(data.certificate);
-
-      // For now, we'll just update the local state
-      if (certificate) {
-        setCertificate({
+      // Call API to update the certificate status
+      const response = await fetch(`/api/certificates/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           ...certificate,
           status: newStatus,
-          issueDate: newStatus === 'ISSUED' ? new Date().toISOString() : certificate.issueDate,
-        });
+          issueDate: newStatus === 'ISSUED' ? new Date().toISOString() : certificate?.issueDate,
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update certificate status');
       }
+      
+      const data = await response.json();
+      setCertificate(data.certificate);
     } catch (error) {
-      console.error('Error updating certificate status:', error);
-      alert('Failed to update certificate status');
+      console.error("Error updating certificate status:", error);
+      alert("Failed to update certificate status");
     }
   };
 
   const handleDeleteCertificate = async () => {
-    if (confirm('Are you sure you want to delete this certificate?')) {
+    if (confirm("Are you sure you want to delete this certificate?")) {
       try {
-        // In a real application, you would call an API to delete the certificate
-        // const response = await fetch(`/api/certificates/${id}`, {
-        //   method: 'DELETE',
-        // });
-        // 
-        // if (!response.ok) {
-        //   throw new Error('Failed to delete certificate');
-        // }
+        // Call API to delete the certificate
+        const response = await fetch(`/api/certificates/${id}`, {
+          method: 'DELETE',
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to delete certificate');
+        }
 
-        // For now, we'll just simulate a successful deletion
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        router.push('/dashboard/certificates');
+        router.push("/dashboard/certificates");
       } catch (error) {
-        console.error('Error deleting certificate:', error);
-        alert('Failed to delete certificate');
+        console.error("Error deleting certificate:", error);
+        alert("Failed to delete certificate");
       }
     }
   };
@@ -145,8 +126,12 @@ export default function CertificateDetailPage() {
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <p className="text-red-500 mb-4">{error || 'Certificate not found'}</p>
-              <Button onClick={() => router.push('/dashboard/certificates')}>Back to Certificates</Button>
+              <p className="text-red-500 mb-4">
+                {error || "Certificate not found"}
+              </p>
+              <Button onClick={() => router.push("/dashboard/certificates")}>
+                Back to Certificates
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -155,24 +140,45 @@ export default function CertificateDetailPage() {
   }
 
   return (
-    <div className="px-4">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-        <h1 className="text-2xl font-bold mb-4 md:mb-0">Detail Sertifikat</h1>
+    <div className="px-4 max-w-4xl mx-auto">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <div className="flex items-center gap-2">
+          <Award className="h-10 w-10 text-primary" />
+          <div>
+            <h1 className="text-2xl font-bold">Detail Sertifikat</h1>
+            <p className="text-gray-500 mt-1">{certificate.title}</p>
+          </div>
+        </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" onClick={() => router.push('/dashboard/certificates')}>
+          <Button
+            variant="outline"
+            className="cursor-pointer"
+            onClick={() => router.push("/dashboard/certificates")}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
             Kembali
           </Button>
-          <Button variant="primary" onClick={() => router.push(`/dashboard/certificates/edit/${id}`)}>
+          <Button
+            variant="primary"
+            className="cursor-pointer"
+            onClick={() => router.push(`/dashboard/certificates/edit/${id}`)}
+          >
+            <Edit className="mr-2 h-4 w-4" />
             Edit
           </Button>
-          <Button variant="danger" onClick={handleDeleteCertificate}>
+          <Button
+            variant="danger"
+            className="cursor-pointer"
+            onClick={handleDeleteCertificate}
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
             Hapus
           </Button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="lg:col-span-2"
@@ -189,19 +195,36 @@ export default function CertificateDetailPage() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Deskripsi</p>
-                  <p>{certificate.description || '-'}</p>
+                  <p>{certificate.description || "-"}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Status</p>
                   <div className="flex items-center mt-1">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      certificate.status === 'ISSUED' ? 'bg-green-100 text-green-800' : 
-                      certificate.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 
-                      'bg-red-100 text-red-800'
-                    }`}>
-                      {certificate.status === 'ISSUED' ? 'Diterbitkan' : 
-                       certificate.status === 'PENDING' ? 'Menunggu' : 
-                       'Dicabut'}
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        certificate.status === "ISSUED"
+                          ? "bg-green-100 text-green-800"
+                          : certificate.status === "PENDING"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      {certificate.status === "ISSUED" ? (
+                        <>
+                          <CheckCircle className="mr-1 h-3 w-3" />
+                          Diterbitkan
+                        </>
+                      ) : certificate.status === "PENDING" ? (
+                        <>
+                          <Clock className="mr-1 h-3 w-3" />
+                          Menunggu
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="mr-1 h-3 w-3" />
+                          Dicabut
+                        </>
+                      )}
                     </span>
                   </div>
                 </div>
@@ -220,7 +243,7 @@ export default function CertificateDetailPage() {
           </Card>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
@@ -249,12 +272,17 @@ export default function CertificateDetailPage() {
                   <p className="font-medium">{certificate.student.year}</p>
                 </div>
                 <div className="pt-2">
-                  <Button 
-                    variant="outline" 
-                    className="w-full"
-                    onClick={() => router.push(`/dashboard/students/${certificate.student.id}`)}
+                  <Button
+                    variant="outline"
+                    className="w-full cursor-pointer"
+                    onClick={() =>
+                      router.push(
+                        `/dashboard/students/${certificate.student.id}`
+                      )
+                    }
                   >
-                    Lihat Detail Mahasiswa
+                    <Eye className="mr-2 h-4 w-4" />
+                    Detail Mahasiswa
                   </Button>
                 </div>
               </div>
@@ -267,30 +295,33 @@ export default function CertificateDetailPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {certificate.status === 'PENDING' && (
-                  <Button 
-                    className="w-full" 
-                    onClick={() => handleStatusChange('ISSUED')}
+                {certificate.status === "PENDING" && (
+                  <Button
+                    className="w-full cursor-pointer"
+                    onClick={() => handleStatusChange("ISSUED")}
                   >
+                    <CheckCircle className="mr-2 h-4 w-4" />
                     Terbitkan Sertifikat
                   </Button>
                 )}
-                {certificate.status === 'ISSUED' && (
-                  <Button 
-                    variant="danger" 
-                    className="w-full"
-                    onClick={() => handleStatusChange('REVOKED')}
+                {certificate.status === "ISSUED" && (
+                  <Button
+                    variant="danger"
+                    className="w-full cursor-pointer"
+                    onClick={() => handleStatusChange("REVOKED")}
                   >
+                    <XCircle className="mr-2 h-4 w-4" />
                     Cabut Sertifikat
                   </Button>
                 )}
-                {certificate.status === 'REVOKED' && (
-                  <Button 
-                    variant="outline" 
-                    className="w-full"
-                    onClick={() => handleStatusChange('PENDING')}
+                {certificate.status === "REVOKED" && (
+                  <Button
+                    variant="outline"
+                    className="w-full cursor-pointer"
+                    onClick={() => handleStatusChange("PENDING")}
                   >
-                    Kembalikan ke Status Menunggu
+                    <Clock className="mr-2 h-4 w-4" />
+                    Tunggu Persetujuan
                   </Button>
                 )}
               </div>

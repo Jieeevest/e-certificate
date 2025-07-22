@@ -12,6 +12,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Award, Save, ArrowLeft, Search, User } from "lucide-react";
 
 interface Student {
   id: string;
@@ -32,16 +33,16 @@ export default function AddCertificatePage() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    studentId: studentId || "",
+    studentNim: studentId ? "" : "", // Changed from studentId to studentNim
   });
 
   useEffect(() => {
     const fetchStudents = async () => {
       try {
         // Fetch students from API
-        const response = await fetch('/api/students');
+        const response = await fetch("/api/students");
         if (!response.ok) {
-          throw new Error('Failed to fetch students');
+          throw new Error("Failed to fetch students");
         }
         const { students } = await response.json();
         setStudents(students);
@@ -50,7 +51,7 @@ export default function AddCertificatePage() {
         if (studentId) {
           const student = students.find((s: Student) => s.id === studentId);
           if (student) {
-            setFormData((prev) => ({ ...prev, studentId }));
+            setFormData((prev) => ({ ...prev, studentNim: student.nim }));
           }
         }
       } catch (error) {
@@ -79,7 +80,7 @@ export default function AddCertificatePage() {
     setError("");
 
     // Validate form
-    if (!formData.title || !formData.studentId) {
+    if (!formData.title || !formData.studentNim) {
       setError("Judul dan mahasiswa harus dipilih");
       return;
     }
@@ -87,18 +88,29 @@ export default function AddCertificatePage() {
     setLoading(true);
 
     try {
-      // Call API to create the certificate
-      const response = await fetch('/api/certificates', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      // Find the student ID based on the selected NIM
+      const selectedStudent = students.find(student => student.nim === formData.studentNim);
       
+      if (!selectedStudent) {
+        throw new Error("Mahasiswa tidak ditemukan");
+      }
+
+      // Call API to create the certificate
+      const response = await fetch("/api/certificates", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: formData.title,
+          description: formData.description,
+          studentId: selectedStudent.id, // Send the ID to the API
+        }),
+      });
+
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create certificate');
+        throw new Error(errorData.error || "Failed to create certificate");
       }
 
       // Redirect to certificates page or student detail page if came from there
@@ -127,11 +139,14 @@ export default function AddCertificatePage() {
 
   return (
     <div className="px-4 max-w-2xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">Tambah Sertifikat Baru</h1>
-        <p className="text-gray-500 mt-1">
-          Buat sertifikat baru untuk mahasiswa
-        </p>
+      <div className="mb-6 flex items-center gap-2">
+        <Award className="h-10 w-10 text-primary" />
+        <div>
+          <h1 className="text-2xl font-bold">Tambah Sertifikat Baru</h1>
+          <p className="text-gray-500 mt-1">
+            Buat sertifikat baru untuk mahasiswa
+          </p>
+        </div>
       </div>
 
       <Card>
@@ -178,29 +193,37 @@ export default function AddCertificatePage() {
               <label htmlFor="studentSearch" className="text-sm font-medium">
                 Cari Mahasiswa
               </label>
-              <Input
-                id="studentSearch"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Cari berdasarkan nama, NIM, atau jurusan"
-              />
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  id="studentSearch"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Cari berdasarkan nama, NIM, atau jurusan"
+                  className="pl-10"
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="studentId" className="text-sm font-medium">
+              <label
+                htmlFor="studentId"
+                className="text-sm font-medium flex items-center gap-1"
+              >
+                <User className="h-4 w-4" />
                 Pilih Mahasiswa
               </label>
               <select
                 id="studentId"
-                name="studentId"
-                value={formData.studentId}
+                name="studentNim"
+                value={formData.studentNim}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               >
                 <option value="">-- Pilih Mahasiswa --</option>
                 {filteredStudents.map((student) => (
-                  <option key={student.id} value={student.id}>
+                  <option key={student.id} value={student.nim}>
                     {student.name} ({student.nim}) - {student.major}
                   </option>
                 ))}
@@ -212,13 +235,22 @@ export default function AddCertificatePage() {
             <Button
               type="button"
               variant="outline"
+              className="cursor-pointer"
               onClick={() => router.back()}
               disabled={loading}
             >
+              <ArrowLeft className="mr-2 h-4 w-4" />
               Batal
             </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? "Menyimpan..." : "Simpan"}
+            <Button type="submit" className="cursor-pointer" disabled={loading}>
+              {loading ? (
+                "Menyimpan..."
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Simpan
+                </>
+              )}
             </Button>
           </CardFooter>
         </form>
