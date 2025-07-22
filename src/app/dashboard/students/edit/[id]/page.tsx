@@ -12,13 +12,14 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Save, X } from "lucide-react";
 
 interface Student {
   id: string;
   nim: string;
   name: string;
   major: string;
-  year: number;
+  year: string;
 }
 
 export default function EditStudentPage() {
@@ -32,39 +33,22 @@ export default function EditStudentPage() {
     nim: "",
     name: "",
     major: "",
-    year: new Date().getFullYear(),
+    year: new Date().getFullYear().toString(),
   });
 
   useEffect(() => {
     const fetchStudent = async () => {
       try {
-        // In a real application, you would fetch this data from an API
-        // const response = await fetch(`/api/students/${id}`);
-        // if (!response.ok) {
-        //   throw new Error('Failed to fetch student');
-        // }
-        // const data = await response.json();
-        // setFormData({
-        //   nim: data.student.nim,
-        //   name: data.student.name,
-        //   major: data.student.major,
-        //   year: data.student.year,
-        // });
-
-        // Mock data for now
-        const mockStudent: Student = {
-          id,
-          nim: "S12345",
-          name: "John Doe",
-          major: "Computer Science",
-          year: 2023,
-        };
-
+        const response = await fetch(`/api/students/${id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch student');
+        }
+        const data = await response.json();
         setFormData({
-          nim: mockStudent.nim,
-          name: mockStudent.name,
-          major: mockStudent.major,
-          year: mockStudent.year,
+          nim: data.student.nim,
+          name: data.student.name,
+          major: data.student.major,
+          year: data.student.year,
         });
 
         setLoading(false);
@@ -84,8 +68,7 @@ export default function EditStudentPage() {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]:
-        name === "year" ? parseInt(value) || new Date().getFullYear() : value,
+      [name]: value,
     }));
   };
 
@@ -102,26 +85,21 @@ export default function EditStudentPage() {
     setSaving(true);
 
     try {
-      // In a real application, you would call an API to update the student
-      // const response = await fetch(`/api/students/${id}`, {
-      //   method: 'PUT',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(formData),
-      // });
-      //
-      // if (!response.ok) {
-      //   const errorData = await response.json();
-      //   throw new Error(errorData.message || 'Failed to update student');
-      // }
+      const response = await fetch(`/api/students/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
 
-      // For now, we'll just simulate a successful update
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update student');
+      }
 
       // Redirect to student detail page
       router.push(`/dashboard/students/${id}`);
-      router.refresh(); // Refresh the page to show the updated student
     } catch (error: any) {
       console.error("Error updating student:", error);
       setError(
@@ -134,7 +112,7 @@ export default function EditStudentPage() {
 
   // Generate year options for the last 10 years
   const currentYear = new Date().getFullYear();
-  const yearOptions = Array.from({ length: 10 }, (_, i) => currentYear - i);
+  const yearOptions = Array.from({ length: 10 }, (_, i) => (currentYear - i).toString());
 
   if (loading) {
     return (
@@ -232,11 +210,23 @@ export default function EditStudentPage() {
               variant="outline"
               onClick={() => router.back()}
               disabled={saving}
+              className="cursor-pointer"
             >
+              <X className="mr-2 h-4 w-4" />
               Batal
             </Button>
-            <Button type="submit" disabled={saving}>
-              {saving ? "Menyimpan..." : "Simpan"}
+            <Button type="submit" disabled={saving} className="cursor-pointer">
+              {saving ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
+                  Menyimpan...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Simpan
+                </>
+              )}
             </Button>
           </CardFooter>
         </form>

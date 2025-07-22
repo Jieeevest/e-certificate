@@ -23,5 +23,16 @@
     "enrollmentDate": "2025-07-16T13:11:06.296Z",
     "createdAt": "2025-07-16T13:11:06.296Z",
     "updatedAt": "2025-07-16T13:11:06.296Z"
+  },
+  {
+    "id": "897579c3-cc0d-4c40-9fdb-c9c73fcf6dd8",
+    "nim": "9090",
+    "email": "9090@student.test.id",
+    "name": "eks",
+    "major": "Ilkom",
+    "year": 2025,
+    "enrollmentDate": "2025-07-17T13:23:47.685Z",
+    "createdAt": "2025-07-17T13:23:47.685Z",
+    "updatedAt": "2025-07-17T13:23:47.685Z"
   }
 ]

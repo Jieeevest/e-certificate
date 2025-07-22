@@ -6,13 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { ArrowLeft, Edit, Trash2, PlusCircle, Eye } from "lucide-react";
 
 interface Student {
   id: string;
   nim: string;
   name: string;
+  email: string;
   major: string;
-  year: number;
+  year: string;
+  enrollmentDate: string;
   createdAt: string;
   certificates: Certificate[];
 }
@@ -37,45 +40,12 @@ export default function StudentDetailPage() {
   useEffect(() => {
     const fetchStudent = async () => {
       try {
-        // In a real application, you would fetch this data from an API
-        // const response = await fetch(`/api/students/${id}`);
-        // if (!response.ok) {
-        //   throw new Error('Failed to fetch student');
-        // }
-        // const data = await response.json();
-        // setStudent(data.student);
-
-        // Mock data for now
-        const mockStudent: Student = {
-          id,
-          nim: "S12345",
-          name: "John Doe",
-          major: "Computer Science",
-          year: 2023,
-          createdAt: new Date().toISOString(),
-          certificates: [
-            {
-              id: "cert1",
-              title: "Web Development Certificate",
-              description:
-                "Completed the web development course with excellence",
-              status: "ISSUED",
-              issueDate: new Date().toISOString(),
-              createdAt: new Date().toISOString(),
-            },
-            {
-              id: "cert2",
-              title: "Database Management Certificate",
-              description:
-                "Successfully completed the database management course",
-              status: "PENDING",
-              issueDate: null,
-              createdAt: new Date().toISOString(),
-            },
-          ],
-        };
-
-        setStudent(mockStudent);
+        const response = await fetch(`/api/students/${id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch student');
+        }
+        const data = await response.json();
+        setStudent(data.student);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching student:", error);
@@ -88,24 +58,21 @@ export default function StudentDetailPage() {
   }, [id]);
 
   const handleDeleteStudent = async () => {
-    if (confirm("Are you sure you want to delete this student?")) {
+    if (confirm("Apakah Anda yakin ingin menghapus mahasiswa ini?")) {
       try {
-        // In a real application, you would call an API to delete the student
-        // const response = await fetch(`/api/students/${id}`, {
-        //   method: 'DELETE',
-        // });
-        //
-        // if (!response.ok) {
-        //   throw new Error('Failed to delete student');
-        // }
+        const response = await fetch(`/api/students/${id}`, {
+          method: 'DELETE',
+        });
 
-        // For now, we'll just simulate a successful deletion
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to delete student');
+        }
 
         router.push("/dashboard/students");
       } catch (error) {
         console.error("Error deleting student:", error);
-        alert("Failed to delete student");
+        alert(`Gagal menghapus mahasiswa: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     }
   };
@@ -131,7 +98,8 @@ export default function StudentDetailPage() {
               <p className="text-red-500 mb-4">
                 {error || "Student not found"}
               </p>
-              <Button onClick={() => router.push("/dashboard/students")}>
+              <Button onClick={() => router.push("/dashboard/students")} className="cursor-pointer">
+                <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Students
               </Button>
             </div>
@@ -149,16 +117,21 @@ export default function StudentDetailPage() {
           <Button
             variant="outline"
             onClick={() => router.push("/dashboard/students")}
+            className="cursor-pointer"
           >
+            <ArrowLeft className="mr-2 h-4 w-4" />
             Kembali
           </Button>
           <Button
             variant="primary"
             onClick={() => router.push(`/dashboard/students/edit/${id}`)}
+            className="cursor-pointer"
           >
+            <Edit className="mr-2 h-4 w-4" />
             Edit
           </Button>
-          <Button variant="danger" onClick={handleDeleteStudent}>
+          <Button variant="danger" onClick={handleDeleteStudent} className="cursor-pointer">
+            <Trash2 className="mr-2 h-4 w-4" />
             Hapus
           </Button>
         </div>
@@ -185,6 +158,10 @@ export default function StudentDetailPage() {
                   <p className="font-medium">{student.nim}</p>
                 </div>
                 <div>
+                  <p className="text-sm text-gray-500">Email</p>
+                  <p className="font-medium">{student.email}</p>
+                </div>
+                <div>
                   <p className="text-sm text-gray-500">Jurusan</p>
                   <p className="font-medium">{student.major}</p>
                 </div>
@@ -193,8 +170,8 @@ export default function StudentDetailPage() {
                   <p className="font-medium">{student.year}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Terdaftar Pada</p>
-                  <p className="font-medium">{formatDate(student.createdAt)}</p>
+                  <p className="text-sm text-gray-500">Tanggal Pendaftaran</p>
+                  <p className="font-medium">{formatDate(student.enrollmentDate)}</p>
                 </div>
               </div>
             </CardContent>
@@ -210,7 +187,10 @@ export default function StudentDetailPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Sertifikat</CardTitle>
-              <Button onClick={handleAddCertificate}>Tambah Sertifikat</Button>
+              <Button onClick={handleAddCertificate} className="cursor-pointer">
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Tambah Sertifikat
+              </Button>
             </CardHeader>
             <CardContent>
               {student.certificates.length === 0 ? (
@@ -269,7 +249,9 @@ export default function StudentDetailPage() {
                                     `/dashboard/certificates/${certificate.id}`
                                   )
                                 }
+                                className="cursor-pointer"
                               >
+                                <Eye className="mr-1 h-3 w-3" />
                                 Detail
                               </Button>
                             </div>

@@ -12,6 +12,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Save, X } from "lucide-react";
 
 export default function AddStudentPage() {
   const router = useRouter();
@@ -22,7 +23,7 @@ export default function AddStudentPage() {
     name: "",
     email: "",
     major: "",
-    year: new Date().getFullYear(),
+    year: new Date().getFullYear().toString(),
   });
 
   const handleChange = (
@@ -31,8 +32,7 @@ export default function AddStudentPage() {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]:
-        name === "year" ? parseInt(value) || new Date().getFullYear() : value,
+      [name]: value,
     }));
   };
 
@@ -60,12 +60,11 @@ export default function AddStudentPage() {
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create student');
+        throw new Error(errorData.error || 'Failed to create student');
       }
 
       // Redirect to students page
       router.push("/dashboard/students");
-      router.refresh(); // Refresh the page to show the new student
     } catch (error: any) {
       console.error("Error creating student:", error);
       setError(error.message || "Terjadi kesalahan saat membuat mahasiswa");
@@ -76,7 +75,7 @@ export default function AddStudentPage() {
 
   // Generate year options for the last 10 years
   const currentYear = new Date().getFullYear();
-  const yearOptions = Array.from({ length: 10 }, (_, i) => currentYear - i);
+  const yearOptions = Array.from({ length: 10 }, (_, i) => (currentYear - i).toString());
 
   return (
     <div className="px-4 max-w-2xl mx-auto">
@@ -183,11 +182,23 @@ export default function AddStudentPage() {
               variant="outline"
               onClick={() => router.back()}
               disabled={loading}
+              className="cursor-pointer"
             >
+              <X className="mr-2 h-4 w-4" />
               Batal
             </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? "Menyimpan..." : "Simpan"}
+            <Button type="submit" disabled={loading} className="cursor-pointer">
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
+                  Menyimpan...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Simpan
+                </>
+              )}
             </Button>
           </CardFooter>
         </form>

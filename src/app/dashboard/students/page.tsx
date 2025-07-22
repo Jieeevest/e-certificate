@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { formatDate } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { UserPlus, Search, Eye } from "lucide-react";
 
 interface Student {
   id: string;
@@ -65,17 +66,21 @@ export default function StudentsPage() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
         <h1 className="text-2xl font-bold mb-4 md:mb-0">Daftar Mahasiswa</h1>
         <div className="flex flex-col sm:flex-row gap-4">
-          <Input
-            placeholder="Cari mahasiswa..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="max-w-xs"
-          />
+          <div className="relative max-w-xs">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Cari mahasiswa..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="max-w-xs pl-10"
+            />
+          </div>
           <Link href="/dashboard/students/add">
             <Button
-              variant="primary"
-              className="text-sm w-[120px] cursor-pointer"
-            >
+                variant="primary"
+                className="text-sm w-[120px] cursor-pointer"
+              >
+              <UserPlus className="mr-2 h-4 w-4" />
               Tambah Data
             </Button>
           </Link>
@@ -120,6 +125,7 @@ export default function StudentsPage() {
                         size="sm"
                         className="text-sm w-[80px] cursor-pointer"
                       >
+                        <Eye className="mr-1 h-3 w-3" />
                         Detail
                       </Button>
                     </Link>
