@@ -34,5 +34,16 @@
     "enrollmentDate": "2025-07-17T13:23:47.685Z",
     "createdAt": "2025-07-17T13:23:47.685Z",
     "updatedAt": "2025-07-17T13:23:47.685Z"
+  },
+  {
+    "id": "61dfbe68-dcdc-4a71-b6cc-cad2ae4507ca",
+    "nim": "11567676767",
+    "email": "11567676767@student.test.id",
+    "name": "Surya",
+    "major": "Informatika",
+    "year": "2023",
+    "enrollmentDate": "2025-07-22T14:49:45.225Z",
+    "createdAt": "2025-07-22T14:49:45.225Z",
+    "updatedAt": "2025-07-22T14:49:45.225Z"
   }
 ]

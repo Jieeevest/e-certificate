@@ -42,7 +42,7 @@ export default function StudentDetailPage() {
       try {
         const response = await fetch(`/api/students/${id}`);
         if (!response.ok) {
-          throw new Error('Failed to fetch student');
+          throw new Error("Failed to fetch student");
         }
         const data = await response.json();
         setStudent(data.student);
@@ -61,18 +61,22 @@ export default function StudentDetailPage() {
     if (confirm("Apakah Anda yakin ingin menghapus mahasiswa ini?")) {
       try {
         const response = await fetch(`/api/students/${id}`, {
-          method: 'DELETE',
+          method: "DELETE",
         });
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to delete student');
+          throw new Error(errorData.error || "Failed to delete student");
         }
 
         router.push("/dashboard/students");
       } catch (error) {
         console.error("Error deleting student:", error);
-        alert(`Gagal menghapus mahasiswa: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        alert(
+          `Gagal menghapus mahasiswa: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`
+        );
       }
     }
   };
@@ -98,7 +102,10 @@ export default function StudentDetailPage() {
               <p className="text-red-500 mb-4">
                 {error || "Student not found"}
               </p>
-              <Button onClick={() => router.push("/dashboard/students")} className="cursor-pointer">
+              <Button
+                onClick={() => router.push("/dashboard/students")}
+                className="cursor-pointer"
+              >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Students
               </Button>
@@ -130,7 +137,11 @@ export default function StudentDetailPage() {
             <Edit className="mr-2 h-4 w-4" />
             Edit
           </Button>
-          <Button variant="danger" onClick={handleDeleteStudent} className="cursor-pointer">
+          <Button
+            variant="danger"
+            onClick={handleDeleteStudent}
+            className="cursor-pointer"
+          >
             <Trash2 className="mr-2 h-4 w-4" />
             Hapus
           </Button>
@@ -171,7 +182,9 @@ export default function StudentDetailPage() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Tanggal Pendaftaran</p>
-                  <p className="font-medium">{formatDate(student.enrollmentDate)}</p>
+                  <p className="font-medium">
+                    {formatDate(student.enrollmentDate)}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -242,6 +255,7 @@ export default function StudentDetailPage() {
                             </div>
                             <div className="mt-3 md:mt-0 flex space-x-2">
                               <Button
+                                id={certificate.title}
                                 variant="outline"
                                 size="sm"
                                 onClick={() =>
