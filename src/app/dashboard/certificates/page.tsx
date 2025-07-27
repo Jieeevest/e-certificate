@@ -172,7 +172,7 @@ export default function CertificatesPage() {
           animate={{ opacity: 1 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {filteredCertificates.map((certificate) => (
+          {filteredCertificates.map((certificate, index) => (
             <motion.div
               key={certificate.id}
               initial={{ opacity: 0, y: 20 }}
@@ -198,6 +198,7 @@ export default function CertificatesPage() {
                     </div>
                     <Link href={`/dashboard/certificates/${certificate.id}`}>
                       <Button
+                        id={"key-" + index.toString()}
                         variant="outline"
                         size="sm"
                         className="text-sm w-[80px] cursor-pointer"
