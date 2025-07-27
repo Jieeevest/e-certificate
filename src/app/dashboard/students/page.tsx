@@ -121,6 +121,7 @@ export default function StudentsPage() {
                     </div>
                     <Link href={`/dashboard/students/${student.id}`}>
                       <Button
+                        id={student.nim}
                         variant="outline"
                         size="sm"
                         className="text-sm w-[80px] cursor-pointer"
